@@ -16,19 +16,14 @@ namespace FileUpload.Controllers
             _uploadService = uploadService;
         }
 
-        /// <summary>
-        /// Single File Upload
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        [HttpPost("PostSingleFile")]
-        public async Task<ActionResult> PostSingleFile([FromForm] FileUploadModel fileDetails)
-        {
-            if(fileDetails == null)
-            {
-                return BadRequest();
-            }
 
+        [HttpPost]
+        [Route("UploadFile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> UploadFile([FromForm] FileUploadModel fileDetails,CancellationToken cancellationToken=default)
+        {
+            if(fileDetails == null) return BadRequest();
             try
             {
                 await _uploadService.PostFileAsync(fileDetails.FileDetails, fileDetails.FileType);
@@ -40,11 +35,7 @@ namespace FileUpload.Controllers
             }         
         }
 
-        /// <summary>
-        /// Multiple File Upload
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
+      
         [HttpPost("PostMultipleFile")]
         public async Task<ActionResult> PostMultipleFile([FromForm] List<FileUploadModel> fileDetails)
         {
@@ -64,11 +55,7 @@ namespace FileUpload.Controllers
             }
         }
 
-        /// <summary>
-        /// Download File
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
+        
         [HttpGet("DownloadFile")]
         public async Task<ActionResult> DownloadFile(int id)
         {

@@ -14,7 +14,7 @@ namespace FileUpload.Services
             this.dbContextClass = dbContextClass;
         }
 
-        public async Task PostFileAsync(IFormFile fileData, FileType fileType)
+        public async Task PostFileAsync(IFormFile fileData, FileType fileType, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace FileUpload.Services
                 }
 
                 var result = dbContextClass.FileDetails.Add(fileDetails);
-                await dbContextClass.SaveChangesAsync();
+                await dbContextClass.SaveChangesAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -40,7 +40,7 @@ namespace FileUpload.Services
             }
         }
 
-        public async Task PostMultiFileAsync(List<FileUploadModel> fileData)
+        public async Task PostMultiFileAsync(List<FileUploadModel> fileData, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace FileUpload.Services
 
                     var result = dbContextClass.FileDetails.Add(fileDetails);
                 }             
-                await dbContextClass.SaveChangesAsync();
+                await dbContextClass.SaveChangesAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -69,11 +69,11 @@ namespace FileUpload.Services
             }
         }
 
-        public async Task DownloadFileById(int Id)
+        public async Task DownloadFileById(int Id, CancellationToken cancellationToken = default)
         {
             try
             {
-                var file =  dbContextClass.FileDetails.Where(x => x.ID == Id).FirstOrDefaultAsync();
+                var file =  dbContextClass.FileDetails.Where(x => x.ID == Id).FirstOrDefaultAsync(cancellationToken);
 
                 var content = new System.IO.MemoryStream(file.Result.FileData);
                 var path = Path.Combine(
@@ -88,11 +88,11 @@ namespace FileUpload.Services
             }        
         }
  
-        public async Task CopyStream(Stream stream, string downloadPath)
+        public async Task CopyStream(Stream stream, string downloadPath, CancellationToken cancellationToken = default)
         {
             using (var fileStream = new FileStream(downloadPath, FileMode.Create, FileAccess.Write))
             {
-               await stream.CopyToAsync(fileStream);
+               await stream.CopyToAsync(fileStream,cancellationToken);
             }
         }
     }
